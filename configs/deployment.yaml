@@ -1,19 +1,31 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: xccelerate-dev
+  name: node-app
 spec:
   replicas: 2
   selector:
     matchLabels:
-      app: xccelerate-dev
+      app: node-app
   template:
     metadata:
       labels:
-        app: xccelerate-dev
+        app: node-app
     spec:
       containers:
       - name: node-app
         image: <NODE_APP_IMAGE>
         ports:
           - containerPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: node-app
+spec:
+  selector:
+    app: node-app
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080
