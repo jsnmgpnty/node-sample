@@ -16,4 +16,4 @@ spec:
       - name: node-app
         image: <NODE_APP_IMAGE>
         ports:
-          - containerPort: 3000
+          - containerPort: 8080
