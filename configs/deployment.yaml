@@ -1,0 +1,19 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: xccelerate-dev
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: xccelerate-dev
+  template:
+    metadata:
+      labels:
+        app: xccelerate-dev
+    spec:
+      containers:
+      - name: node-app
+        image: <NODE_APP_IMAGE>
+        ports:
+          - containerPort: 3000
