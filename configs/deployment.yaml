@@ -36,8 +36,7 @@ metadata:
   name: node-app
 spec:
   rules:
-  - host: node-app.sample.com
-    http:
+  - http:
       paths:
       - backend:
           serviceName: node-app
