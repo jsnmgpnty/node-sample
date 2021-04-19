@@ -2,13 +2,14 @@
 
 const express = require('express');
 const axios = require('axios');
+const mongodb = require('mongodb');
 
 // Constants
 const PORT = 8080;
 const HOST = '0.0.0.0';
 let db;
-const APP_NAME = process.env.APP_NAME;
-let CONN_STRING = process.env.MONGODB_CONN_STRING;
+const APP_NAME = process.env.APP_NAME ?? 'APP1';
+let CONN_STRING = process.env.MONGODB_CONN_STRING ?? 'mongodb://localhost:27017/xccelerate_jobs';
 
 // App
 const app = express();
@@ -25,7 +26,7 @@ app.get('/app2', (req, res) => {
     });
 });
 app.get('/jobs', (req, res) => {
-  db.collection('Jobs').find({}).toArray(function (err, jobs) {
+  db.collection('JobPosts').find({}).toArray(function (err, jobs) {
     res.json(jobs);
   });
 });
@@ -34,9 +35,15 @@ mongodb.connect(
   CONN_STRING,
   { useNewUrlParser: true, useUnifiedTopology: true },
   function (err, client) {
-    db = client.db();
-    app.listen(PORT, HOST, () => {
-      console.log(`${APP_NAME} Running on http://${HOST}:${PORT}`);
-    });
+    if (err) {
+      app.listen(PORT, HOST, () => {
+        console.log(`${APP_NAME} Running on http://${HOST}:${PORT}`);
+      });
+    } else {
+      db = client.db();
+      app.listen(PORT, HOST, () => {
+        console.log(`${APP_NAME} Running on http://${HOST}:${PORT}`);
+      });
+    }
   }
 );
