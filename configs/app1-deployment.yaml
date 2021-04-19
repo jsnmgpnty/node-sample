@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: node-app
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: node-app
@@ -12,6 +12,7 @@ spec:
       labels:
         app: node-app
     spec:
+      dnsPolicy: ClusterFirstWithHostNet
       containers:
       - name: node-app
         image: <NODE_APP_IMAGE>
@@ -36,3 +37,13 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 8080
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mongodb
+spec:
+  type: ClusterIP
+  ports:
+    - port: 27017
+      targetPort: 27017

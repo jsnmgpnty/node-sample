@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: node-app2
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: node-app2
@@ -12,6 +12,7 @@ spec:
       labels:
         app: node-app2
     spec:
+      dnsPolicy: ClusterFirstWithHostNet
       containers:
       - name: node-app2
         image: <NODE_APP_IMAGE>
