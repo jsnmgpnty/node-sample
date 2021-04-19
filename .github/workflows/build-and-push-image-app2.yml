@@ -20,7 +20,8 @@ jobs:
 
       # Build application
       - name: Build image
-        run: docker build -t ${{ secrets.DIGITAL_OCEAN_REGISTRY }}/node-app:${{ github.sha }} -f ./app2/Dockerfile .
+        working-directory: ./app2
+        run: docker build -t ${{ secrets.DIGITAL_OCEAN_REGISTRY }}/node-app2:${{ github.sha }} .
 
       # Install Digital Ocean CLI
       - name: Install doctl
