@@ -1,0 +1,22 @@
+name: update-ingress
+
+on:
+  workflow_dispatch:
+
+jobs:
+  push-image:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Check out repository
+      - uses: actions/checkout@v2
+
+      # Login to Digital Ocean
+      - name: Log in to Digital Ocean
+        run: doctl registry login
+
+      - name: Save DigitalOcean kubeconfig with short-lived credentials
+        run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 xccelerate-dev
+
+      - name: Deploy to DigitalOcean Kubernetes
+        run: kubectl apply -f configs/ingress.yaml
