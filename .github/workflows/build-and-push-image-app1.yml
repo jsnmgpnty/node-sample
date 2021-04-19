@@ -1,4 +1,4 @@
-name: build-and-push-image
+name: build-and-push-image-app1
 
 on:
   # push:
@@ -20,7 +20,7 @@ jobs:
 
       # Build application
       - name: Build image
-        run: docker build . -t ${{ secrets.DIGITAL_OCEAN_REGISTRY }}/node-app:${{ github.sha }}
+        run: docker build -t ${{ secrets.DIGITAL_OCEAN_REGISTRY }}/node-app:${{ github.sha }} -f ./app1/Dockerfile .
 
       # Install Digital Ocean CLI
       - name: Install doctl
@@ -38,13 +38,13 @@ jobs:
           docker push ${{ secrets.DIGITAL_OCEAN_REGISTRY }}/node-app:${{ github.sha }}
 
       - name: Update deployment file
-        run: TAG=$(echo ${{ github.sha }}) && sed -i 's|<NODE_APP_IMAGE>|${{ secrets.DIGITAL_OCEAN_REGISTRY }}/node-app:'${TAG}'|' configs/deployment.yaml
+        run: TAG=$(echo ${{ github.sha }}) && sed -i 's|<NODE_APP_IMAGE>|${{ secrets.DIGITAL_OCEAN_REGISTRY }}/node-app:'${TAG}'|' app1/configs/deployment.yaml
 
       - name: Save DigitalOcean kubeconfig with short-lived credentials
         run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 xccelerate-dev
 
       - name: Deploy to DigitalOcean Kubernetes
-        run: kubectl apply -f configs/deployment.yaml
+        run: kubectl apply -f app1/configs/deployment.yaml
 
       - name: Verify deployment
         run: kubectl rollout status deployment/node-app
