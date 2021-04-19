@@ -41,7 +41,7 @@ jobs:
         run: TAG=$(echo ${{ github.sha }}) && sed -i 's|<NODE_APP_IMAGE>|${{ secrets.DIGITAL_OCEAN_REGISTRY }}/node-app:'${TAG}'|' configs/app2-deployment.yaml
 
       - name: Update ConnectionString
-        run: sed -i 's/<MONGODB_CONN_STRING>/${{ secrets.MONGODB_CONN_STRING }}/g' configs/app2-deployment.yaml
+        run: sed -i 's|<MONGODB_CONN_STRING>|${{ secrets.MONGODB_CONN_STRING }}|' configs/app1-deployment.yaml
 
       - name: Save DigitalOcean kubeconfig with short-lived credentials
         run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 xccelerate-dev

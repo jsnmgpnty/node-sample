@@ -11,6 +11,12 @@ jobs:
       # Check out repository
       - uses: actions/checkout@v2
 
+      # Install Digital Ocean CLI
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITAL_OCEAN_TOKEN }}
+
       # Login to Digital Ocean
       - name: Log in to Digital Ocean
         run: doctl registry login
