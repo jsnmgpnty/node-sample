@@ -22,6 +22,8 @@ spec:
           value: <MONGODB_CONN_STRING>
         - name: APP_NAME
           value: APP2
+        - name: APP_PORT
+          value: <APP_PORT>
 ---
 apiVersion: v1
 kind: Service
