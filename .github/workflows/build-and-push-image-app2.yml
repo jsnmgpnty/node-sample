@@ -1,0 +1,53 @@
+name: build-and-push-image-app2
+
+on:
+  # push:
+  #   branches:
+  #     - main
+  #   paths:
+  #     - 'config/**'
+  #     - 'src/**'
+  #     - 'Dockerfile'
+  workflow_dispatch:
+
+jobs:
+  push-image:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Check out repository
+      - uses: actions/checkout@v2
+
+      # Build application
+      - name: Build image
+        run: docker build -t ${{ secrets.DIGITAL_OCEAN_REGISTRY }}/node-app:${{ github.sha }} -f ./app2/Dockerfile .
+
+      # Install Digital Ocean CLI
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITAL_OCEAN_TOKEN }}
+
+      # Login to Digital Ocean
+      - name: Log in to Digital Ocean
+        run: doctl registry login
+
+      # Push image to Digital Ocean registry
+      - name: Push image to DigitalOcean Container Registry
+        run: |
+          docker push ${{ secrets.DIGITAL_OCEAN_REGISTRY }}/node-app2:${{ github.sha }}
+
+      - name: Update deployment file
+        run: TAG=$(echo ${{ github.sha }}) && sed -i 's|<NODE_APP_IMAGE>|${{ secrets.DIGITAL_OCEAN_REGISTRY }}/node-app2:'${TAG}'|' app2/configs/deployment.yaml
+
+      - name: Update ConnectionString
+        run: sed -i 's/<MONGODB_CONN_STRING>/${{ secrets.MONGODB_CONN_STRING }}/g' app2/configs/deployment.yaml
+
+      - name: Save DigitalOcean kubeconfig with short-lived credentials
+        run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 xccelerate-dev
+
+      - name: Deploy to DigitalOcean Kubernetes
+        run: kubectl apply -f app2/configs/deployment.yaml
+
+      - name: Verify deployment
+        run: kubectl rollout status deployment/node-app2
