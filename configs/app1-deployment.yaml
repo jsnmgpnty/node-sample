@@ -34,17 +34,3 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 8080
----
-apiVersion: networking.k8s.io/v1beta1
-kind: Ingress
-metadata:
-  name: node-app1
-spec:
-  rules:
-  - http:
-      paths:
-      - path: /app1
-        pathType: Prefix
-        backend:
-          serviceName: node-app
-          servicePort: 80
