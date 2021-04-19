@@ -20,7 +20,6 @@ jobs:
 
       # Build application
       - name: Build image
-        working-directory: ./app1
         run: docker build -t ${{ secrets.DIGITAL_OCEAN_REGISTRY }}/node-app:${{ github.sha }} .
 
       # Install Digital Ocean CLI
@@ -39,13 +38,16 @@ jobs:
           docker push ${{ secrets.DIGITAL_OCEAN_REGISTRY }}/node-app:${{ github.sha }}
 
       - name: Update deployment file
-        run: TAG=$(echo ${{ github.sha }}) && sed -i 's|<NODE_APP_IMAGE>|${{ secrets.DIGITAL_OCEAN_REGISTRY }}/node-app:'${TAG}'|' app1/configs/deployment.yaml
+        run: TAG=$(echo ${{ github.sha }}) && sed -i 's|<NODE_APP_IMAGE>|${{ secrets.DIGITAL_OCEAN_REGISTRY }}/node-app:'${TAG}'|' configs/app1-deployment.yaml
+
+      - name: Update ConnectionString
+        run: sed -i 's|<MONGODB_CONN_STRING>|${{ secrets.MONGODB_CONN_STRING }}|' configs/app1-deployment.yaml
 
       - name: Save DigitalOcean kubeconfig with short-lived credentials
         run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 xccelerate-dev
 
       - name: Deploy to DigitalOcean Kubernetes
-        run: kubectl apply -f app1/configs/deployment.yaml
+        run: kubectl apply -f configs/app1-deployment.yaml
 
       - name: Verify deployment
         run: kubectl rollout status deployment/node-app
