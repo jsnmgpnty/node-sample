@@ -1,3 +1,5 @@
+ARG APP_PORT
+
 FROM node:15.4.0-alpine3.10
 
 # Create app directory
@@ -15,5 +17,5 @@ RUN npm install
 # Bundle app source
 COPY . .
 
-EXPOSE 8080
+EXPOSE $APP_PORT
 CMD [ "node", "index.js" ]

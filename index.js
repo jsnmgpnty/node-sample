@@ -21,7 +21,7 @@ app.get('/', (req, res) => {
 app.get('/other-app', (req, res) => {
   console.log('GET /other-app');
   const url = APP_NAME === 'APP1' ? 'node-app2' : 'node-app';
-  axios.get(`https://${url}`)
+  axios.get(`http://${url}`)
     .then(resp => {
       res.send(resp.data);
     })

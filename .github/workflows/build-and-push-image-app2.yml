@@ -20,7 +20,7 @@ jobs:
 
       # Build application
       - name: Build image
-        run: docker build -t ${{ secrets.DIGITAL_OCEAN_REGISTRY }}/node-app:${{ github.sha }} .
+        run: docker build -t ${{ secrets.DIGITAL_OCEAN_REGISTRY }}/node-app:${{ github.sha }} . --build-arg APP_PORT=8081
 
       # Install Digital Ocean CLI
       - name: Install doctl
@@ -38,10 +38,18 @@ jobs:
           docker push ${{ secrets.DIGITAL_OCEAN_REGISTRY }}/node-app:${{ github.sha }}
 
       - name: Update deployment file
-        run: TAG=$(echo ${{ github.sha }}) && sed -i 's|<NODE_APP_IMAGE>|${{ secrets.DIGITAL_OCEAN_REGISTRY }}/node-app:'${TAG}'|' configs/app2-deployment.yaml
+        uses: jacobtomlinson/gha-find-replace@master
+        with:
+          find: "<NODE_APP_IMAGE>"
+          replace: "${{ secrets.DIGITAL_OCEAN_REGISTRY }}/node-app:${{ github.sha }}"
+          include: "configs/app2-deployment.yaml"
 
       - name: Update ConnectionString
-        run: sed -i 's|<MONGODB_CONN_STRING>|${{ secrets.MONGODB_CONN_STRING }}|' configs/app2-deployment.yaml
+        uses: jacobtomlinson/gha-find-replace@master
+        with:
+          find: "<MONGODB_CONN_STRING>"
+          replace: "${{ secrets.MONGODB_CONN_STRING }}"
+          include: "configs/app2-deployment.yaml"
 
       - name: Save DigitalOcean kubeconfig with short-lived credentials
         run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 xccelerate-dev
