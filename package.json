@@ -28,10 +28,7 @@
   },
   "husky": {
     "hooks": {
-      "pre-push": "prepush-if-changed"
+      "pre-push": "echo HOORAY"
     }
-  },
-  "prepush-if-changed": {
-    "**/*.js?(x)": "echo HOORAY"
   }
 }

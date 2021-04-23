@@ -16,12 +16,11 @@ const APP_PORT = process.env.APP_PORT ?? 8080;
 const app = express();
 
 app.get('/', (req, res) => {
-  console.log('GET /');
+  console.log('GET /', req);
   res.send(`Hello World from ${APP_NAME}`);
 });
-
 app.get('/other-app', (req, res) => {
-  console.log('GET /other-app');
+  console.log('GET /other-app', req);
   const url = APP_NAME === 'APP1' ? 'node-app2' : 'node-app';
   axios.get(`http://${url}`)
     .then(resp => {
@@ -31,9 +30,8 @@ app.get('/other-app', (req, res) => {
       res.send(err);
     });
 });
-
 app.get('/jobs', (req, res) => {
-  console.log('GET /jobs');
+  console.log('GET /jobs', req);
   db.collection('JobPosts').find({}).toArray(function (err, jobs) {
     res.json(jobs);
   });
