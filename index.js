@@ -14,10 +14,12 @@ const APP_PORT = process.env.APP_PORT ?? 8080;
 
 // App
 const app = express();
+
 app.get('/', (req, res) => {
   console.log('GET /');
   res.send(`Hello World from ${APP_NAME}`);
 });
+
 app.get('/other-app', (req, res) => {
   console.log('GET /other-app');
   const url = APP_NAME === 'APP1' ? 'node-app2' : 'node-app';
@@ -29,6 +31,7 @@ app.get('/other-app', (req, res) => {
       res.send(err);
     });
 });
+
 app.get('/jobs', (req, res) => {
   console.log('GET /jobs');
   db.collection('JobPosts').find({}).toArray(function (err, jobs) {
