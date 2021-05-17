@@ -22,3 +22,10 @@ spec:
             name: node-app2
             port:
               number: 80
+      - path: "/job-board(/|$)(.*)"
+        pathType: Prefix
+        backend:
+          service:
+            name: job-board-api
+            port:
+              number: 80

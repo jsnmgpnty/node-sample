@@ -1,0 +1,81 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: job-board-api
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: job-board-api
+  template:
+    metadata:
+      labels:
+        app: job-board-api
+    spec:
+      dnsPolicy: ClusterFirstWithHostNet
+      containers:
+      - name: job-board-api
+        image: 406570422574.dkr.ecr.ap-southeast-1.amazonaws.com/job-board-api:dev-ee4115f981f42d3d9470b692f82a3f56a601cce6
+        ports:
+          - containerPort: 5000
+        env:
+        - name: JOBS_DATABASE_CONNECTION_STRING
+          value: 'mongodb+srv://xccelerate:CrMpRBE4bq5BgDTx@dev.xdpkr.mongodb.net/dev_jobs?retryWrites=true&w=majority'
+        - name: APP_PORT
+          value: '5000'
+        - name: APP_NAME
+          value: 'job-board-service'
+        - name: SWAGGER_TITLE
+          value: 'Job Board API'
+        - name: SWAGGER_DESCRIPTION
+          value: 'Handles job board related features'
+        - name: SWAGGER_VERSION
+          value: '1.0'
+        - name: SWAGGER_TITLE
+          value: 'Job Service'
+        - name: ELASTIC_SEARCH_URL
+          value: 'https://search-xccelerate-33jjkxlhiu6cb5zrchhz4wcc7y.ap-southeast-1.es.amazonaws.com/'
+        - name: ELASTIC_SEARCH_USERNAME
+          value: 'xccelerate'
+        - name: ELASTIC_SEARCH_PASSWORD
+          value: '9GNdFZEPFu4MBk7!'
+        - name: USERS_DATABASE_CONNECTION_STRING
+          value: 'mongodb+srv://xccelerate:CrMpRBE4bq5BgDTx@dev.xdpkr.mongodb.net/dev_users?retryWrites=true&w=majority'
+        - name: ELASTIC_SEARCH_INDEX
+          value: 'dev-job-board-api'
+        - name: USER_MODULE_SECRET
+          value: '$$2b$$10$$od56RXFKEGMOe07arQn6Be'
+        - name: JWT_SECRET
+          value: 'HjnBtkbHDCYezeBtHewGZXNrmNCSvJCj'
+        - name: AUTH_TOKEN_EXPIRATION
+          value: '86400'
+        - name: JOBS_SEARCH_INDEX
+          value: 'dev_jobs JobPosts search index'
+        - name: MAILER_SERVICE
+          value: Gmail
+        - name: MAILER_USER
+          value: 'xccmailer@gmail.com'
+        - name: MAILER_PASSWORD
+          value: 'Testtest1!'
+        - name: MAILER_DEFAULT_SENDER
+          value: '"Xccelerate" <xccmailer@gmail.com>'
+        - name: USER_MODULE_PASSWORD_TOKEN_EXPIRATION
+          value: '10080'
+        - name: JOB_BOARD_SITE_URL
+          value: 'https://dev--x-job-board.netlify.app/'
+        - name: CONSULT_US_EMAIL
+          value: 'dev@xccelerate.co'
+      imagePullSecrets:
+        - name: 406570422574.dkr.ecr.ap-southeast-1.amazonaws.com
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: job-board-api
+spec:
+  selector:
+    app: job-board-api
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 5000
