@@ -1,0 +1,54 @@
+name: build-and-push-job-board
+
+on:
+  workflow_dispatch:
+
+jobs:
+  push-image:
+    runs-on: ubuntu-latest
+
+    steps:
+      # Check out repository
+      - uses: actions/checkout@v2
+
+      # Configure AWS Credentials
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+
+      # Login to AWS ECR
+      - name: Login to Amazon ECR
+        id: login-ecr
+        uses: aws-actions/amazon-ecr-login@v1
+
+      # Install Digital Ocean CLI
+      - name: Install doctl
+        uses: digitalocean/action-doctl@v2
+        with:
+          token: ${{ secrets.DIGITAL_OCEAN_TOKEN }}
+
+      # Login to Digital Ocean
+      - name: Log in to Digital Ocean
+        run: doctl registry login
+
+      - name: Save DigitalOcean kubeconfig with short-lived credentials
+        run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 xccelerate-dev
+
+      - name: Refresh cluster secret
+        run: |
+          PASS=$(aws ecr get-login-password --region ${{ secrets.AWS_REGION }})
+          kubectl delete secrets ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-southeast-1.amazonaws.com
+          kubectl create secret docker-registry ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-southeast-1.amazonaws.com \
+            --docker-server=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-southeast-1.amazonaws.com \
+            --docker-username=AWS \
+            --docker-password=$PASS \
+            --docker-email=jason.m@xccelerate.co
+
+      - name: Deploy to DigitalOcean Kubernetes
+        run: kubectl apply -f configs/kube-job-board-deployment.yaml
+
+      - name: Verify deployment
+        run: kubectl rollout status deployment/job-board-api
