@@ -39,7 +39,7 @@ jobs:
 
       - name: Refresh cluster secret
         run: |
-          PASS=$(aws ecr get-login-password --region ${{ secrets.AWS_REGION }})
+          PASS=$(aws ecr get-login-password --region ${{ secrets.AWS_DEFAULT_REGION }})
           kubectl delete secrets ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-southeast-1.amazonaws.com
           kubectl create secret docker-registry ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-southeast-1.amazonaws.com \
             --docker-server=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-southeast-1.amazonaws.com \
