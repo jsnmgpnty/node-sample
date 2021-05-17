@@ -11,6 +11,14 @@ jobs:
       # Check out repository
       - uses: actions/checkout@v2
 
+      # Configure AWS Credentials
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v1
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+
       # Login to AWS ECR
       - name: Login to Amazon ECR
         id: login-ecr
@@ -31,8 +39,13 @@ jobs:
 
       - name: Refresh cluster secret
         run: |
-          kubectl delete secrets 406570422574.dkr.ecr.ap-southeast-1.amazonaws.com
-          kubectl create secret docker-registry 406570422574.dkr.ecr.ap-southeast-1.amazonaws.com --docker-server=406570422574.dkr.ecr.ap-southeast-1.amazonaws.com --docker-username=AWS --docker-password=$PASS --docker-email=jason.m@xccelerate.co
+          PASS=$(aws ecr get-login-password --region ${{ secrets.AWS_REGION }})
+          kubectl delete secrets ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-southeast-1.amazonaws.com
+          kubectl create secret docker-registry ${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-southeast-1.amazonaws.com \
+            --docker-server=${{ secrets.AWS_ACCOUNT_ID }}.dkr.ecr.ap-southeast-1.amazonaws.com \
+            --docker-username=AWS \
+            --docker-password=$PASS \
+            --docker-email=jason.m@xccelerate.co
 
       - name: Deploy to DigitalOcean Kubernetes
         run: kubectl apply -f configs/kube-job-board-deployment.yaml
