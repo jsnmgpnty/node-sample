@@ -8,21 +8,7 @@ spec:
   rules:
   - http:
       paths:
-      - path: "/app1(/|$)(.*)"
-        pathType: Prefix
-        backend:
-          service:
-            name: node-app
-            port:
-              number: 80
-      - path: "/app2(/|$)(.*)"
-        pathType: Prefix
-        backend:
-          service:
-            name: node-app2
-            port:
-              number: 80
-      - path: "/job-board(/|$)(.*)"
+      - path: "(.*)"
         pathType: Prefix
         backend:
           service:

@@ -30,12 +30,8 @@ jobs:
         with:
           token: ${{ secrets.DIGITAL_OCEAN_TOKEN }}
 
-      # Login to Digital Ocean
-      - name: Log in to Digital Ocean
-        run: doctl registry login
-
       - name: Save DigitalOcean kubeconfig with short-lived credentials
-        run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 xccelerate-dev
+        run: doctl kubernetes cluster kubeconfig save --expiry-seconds 600 xcc-dev-kube
 
       - name: Refresh cluster secret
         run: |

@@ -15,7 +15,7 @@ spec:
       dnsPolicy: ClusterFirstWithHostNet
       containers:
       - name: job-board-api
-        image: 406570422574.dkr.ecr.ap-southeast-1.amazonaws.com/job-board-api:dev-ee4115f981f42d3d9470b692f82a3f56a601cce6
+        image: 406570422574.dkr.ecr.ap-southeast-1.amazonaws.com/job-board-api:dev-c5158a994968ea84cf559f5418546c49eee5984f
         ports:
           - containerPort: 5000
         env:
